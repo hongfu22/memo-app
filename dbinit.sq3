@@ -1,0 +1,32 @@
+
+drop table if exists users;
+drop table if exists memos;
+drop table if exists counts;
+
+create table users (
+    id varchar(20) primary key,
+	hashed varchar(70),
+	salt varchar(10)
+);
+
+create table memos (
+    id integer primary key,
+    user_id varchar(20),
+    title varchar(20),
+    content varchar(80),
+    foreign key(user_id) references users(id)
+);
+
+create table counts (
+    id integer primary key,
+    counts integer
+);
+
+insert into users values ('diplo', '7fba80a3642579984776939f13f769254fe1db36e9ca41d7b598e2c1d93ec52a', 'PQ' );
+insert into users values ('allo', 'd12354b521bdc4bcd0de3959a378176112ef3e4d5343ba887c276d13d6d76e61', 'RS');
+
+insert into memos values (1, 'diplo', 'タイトル1', 'テスト');
+insert into memos values (2, 'diplo', 'タイトル2', 'テストテスト');
+insert into memos values (3, 'allo', 'タイトル3', 'テスト2');
+
+insert into counts values(99, 3);

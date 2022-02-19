@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>Memo App</title>
+    <link rel="stylesheet" href="/css/memo.css">
+  </head>
+  <body>
+    <header class="wrapper header-nav">
+        <h1><a href="/memos/1"><img src="/images/logo.png" alt="logo"></a></h1>
+        <nav class="menu">
+          <div class="header-list">
+            <ul>
+              <li><a href="/memos/1">ホーム</a></li>
+              <% if session[:username] %>
+                <li><a href="/users/<%= session[:username] %>/memos/new">メモ作成</a></li>
+                <li><a href="/logout">ログアウト</a></li>
+              <% else %>
+                <li><a href="/login">ログイン</a></li>
+              <% end %>
+            </ul>
+          </div>
+        </nav>
+    </header>
+    <main>
+    <%= yield %>
+    </main>
+  </body>
+</html>

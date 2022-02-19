@@ -1,0 +1,19 @@
+
+<div class="form-section">
+  <form method="post" action="/users/<%= @memo.user_id %>/memos/<%= @memo.id %>">
+    <div class="form-items">
+      <div class="form-items__item">
+        <label>タイトル：</label>
+        <input type="text" value=<%= @memo.title %> name="title" maxlength=20>
+      </div>
+      <div class="form-items__item">
+        <label>内容：</label>
+        <textarea name="content" maxlength=120><%= @memo.content %></textarea>
+      </div>
+      <div class="form-action form-of-creation">
+        <input type="hidden" value="patch" name="_method">
+        <input type="submit" value="更新">
+      </div>
+    </div>
+  </form>
+</div>

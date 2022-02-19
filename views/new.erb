@@ -1,0 +1,19 @@
+
+<div class="form-section">
+  <form method="post" action="/users/<%= session[:username] %>/memos/new">
+    <div class="form-items">
+      <div class="form-items__item">
+        <label>タイトル：</label>
+        <input type="text" name="title" maxlength=20>
+      </div>
+      <div class="form-items_item">
+        <label>内容：</label>
+        <textarea name="content" maxlength=120></textarea>
+      </div>
+      <div class="form-action form-of-creation">
+        <input type="submit" value="作成">
+        <input type="reset" value="リセット">
+      </div>
+    </div>
+  </form>
+</div>

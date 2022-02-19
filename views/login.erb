@@ -1,0 +1,25 @@
+
+<% if session[:message] %>
+  <p><%= session[:message] %></p>
+<% end %>
+<div class="form-section">
+  <form action="/auth" method="post">
+    <div class="form-items">
+      <div class="form-items__item">
+        <label>ユーザーID：</label>
+        <input type="text" name="username">
+      </div>
+      <div class="form-items__item">
+        <label>パスワード：</label>
+        <input type="password" name="pass">
+      </div>
+      <div class="form-action">
+        <input type="submit" value="ログイン">
+        <input type="reset" value="リセット">
+      </div>
+    </div>
+  </form>
+</div>
+
+アカウントをお持ちでない？
+<a href="/register">ユーザー登録</a>
