@@ -12,8 +12,9 @@ get '/' do
 end
 
 get '/memos' do
-  file_context = File.open('public/memos.json') { |f| JSON.parse(f) }
-  @memos = file_context['memos']
+  memo_file = File.read('public/memos.json')
+  file_content = JSON.parse(memo_file)
+  @memos = file_content['memos']
   erb :memos
 end
 
@@ -22,9 +23,10 @@ get '/memos/new' do
 end
 
 post '/memos/new' do
-  file_context = File.open('public/memos.json') { |f| JSON.parse(f) }
+  memo_file = File.read('public/memos.json')
+  file_content = JSON.parse(memo_file)
   new_memo =
-    if file_context['memos'].empty?
+    if file_content['memos'].empty?
       {
         'id' => 1,
         'title' => CGI.escapeHTML(params[:title]),
@@ -32,19 +34,20 @@ post '/memos/new' do
       }
     else
       {
-        'id' => file_context['memos'].last['id'] + 1,
+        'id' => file_content['memos'].last['id'] + 1,
         'title' => CGI.escapeHTML(params[:title]),
         'content' => CGI.escapeHTML(params[:content])
       }
     end
-  file_context['memos'].push(new_memo)
-  File.open('public/memos.json', 'w') { |f| JSON.dump(file_context, f) }
+  file_content['memos'].push(new_memo)
+  File.open('public/memos.json', 'w') { |f| JSON.dump(file_content, f) }
   redirect '/memos'
 end
 
 get '/memos/:memo_id' do
-  file_context = File.open('public/memos.json') { |f| JSON.parse(f) }
-  memos = file_context['memos']
+  memo_file = File.read('public/memos.json')
+  file_content = JSON.parse(memo_file)
+  memos = file_content['memos']
   selected_memo =
     memos.select do |memo|
       memo['id'] == params[:memo_id].to_i
@@ -54,8 +57,9 @@ get '/memos/:memo_id' do
 end
 
 get '/memos/:memo_id/edit' do
-  file_context = File.open('public/memos.json') { |f| JSON.parse(f) }
-  memos = file_context['memos']
+  memo_file = File.read('public/memos.json')
+  file_content = JSON.parse(memo_file)
+  memos = file_content['memos']
   selected_memo =
     memos.select do |memo|
       memo['id'] == params[:memo_id].to_i
@@ -65,27 +69,29 @@ get '/memos/:memo_id/edit' do
 end
 
 patch '/memos/:memo_id/edit' do
-  file_context = File.open('public/memos.json') { |f| JSON.parse(f) }
-  memos = file_context['memos']
+  memo_file = File.read('public/memos.json')
+  file_content = JSON.parse(memo_file)
+  memos = file_content['memos']
   target_memo_index =
     memos.each_index.select do |index|
       memos[index]['id'] == params[:memo_id].to_i
     end
-  file_context['memos'][*target_memo_index]['title'] = CGI.escapeHTML(params[:title])
-  file_context['memos'][*target_memo_index]['content'] = CGI.escapeHTML(params[:content])
-  File.open('public/memos.json', 'w') { |f| JSON.dump(file_context, f) }
+  file_content['memos'][*target_memo_index]['title'] = CGI.escapeHTML(params[:title])
+  file_content['memos'][*target_memo_index]['content'] = CGI.escapeHTML(params[:content])
+  File.open('public/memos.json', 'w') { |f| JSON.dump(file_content, f) }
   redirect '/memos'
 end
 
 delete '/memos/delete' do
-  file_context = File.open('public/memos.json') { |f| JSON.parse(f) }
-  memos = file_context['memos']
+  memo_file = File.read('public/memos.json')
+  file_content = JSON.parse(memo_file)
+  memos = file_content['memos']
   target_memo_index =
     memos.each_index.select do |index|
       memos[index]['id'] == params[:memo_id].to_i
     end
-  file_context['memos'].delete_at(*target_memo_index)
-  File.open('public/memos.json', 'w') { |f| JSON.dump(file_context, f) }
+  file_content['memos'].delete_at(*target_memo_index)
+  File.open('public/memos.json', 'w') { |f| JSON.dump(file_content, f) }
   redirect '/memos'
 end
 
