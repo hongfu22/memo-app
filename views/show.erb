@@ -1,0 +1,24 @@
+<div class="form-section">
+  <form method="post" action="/memos/<%= @target_memo["id"] %>/edit">
+    <div class="form-items">
+      <div class="form-items__item">
+        <label>タイトル：</label>
+        <input type="text" value=<%= @target_memo["title"] %> name="title" maxlength=20 disabled="disabled">
+      </div>
+      <div class="form-items__item">
+        <label>内容：</label>
+        <textarea name="content" maxlength=120 disabled="disabled"><%= @target_memo["content"] %></textarea>
+      </div>
+    </div>
+  </form>
+    <div class="form-action form-of-creation">
+      <form method="get" action="/memos/<%= @target_memo["id"] %>/edit">
+        <input type="submit" value="Edit">
+      </form>
+      <form method="post" action="/memos/delete">
+        <input type="text" value="<%= @target_memo["id"] %>" name="memo_id" hidden>
+        <input type="hidden" value="delete" name="_method">
+        <input type="submit" value="Delete">
+      </form>
+    </div>
+</div>
