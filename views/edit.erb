@@ -1,14 +1,14 @@
 
 <div class="form-section">
-  <form method="post" action="/memos/<%= @target_memo["id"] %>/edit">
+  <form method="post" action="/memos/<%= @target_memo["id"] %>">
     <div class="form-items">
       <div class="form-items__item">
         <label>タイトル：</label>
-        <input type="text" value=<%= @target_memo["title"] %> name="title" maxlength=20>
+        <input type="text" value=<%= CGI.escapeHTML(@target_memo["title"]) %> name="title" maxlength=20>
       </div>
       <div class="form-items__item">
         <label>内容：</label>
-        <textarea name="content" maxlength=120><%= @target_memo["content"] %></textarea>
+        <textarea name="content" maxlength=120><%= CGI.escapeHTML(@target_memo["content"]) %></textarea>
       </div>
       <div class="form-action form-of-creation">
         <input type="hidden" value="patch" name="_method">

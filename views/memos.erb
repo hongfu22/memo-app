@@ -7,7 +7,7 @@
     <% @memos.each do |memo| %>
       <tr>
         <td>
-          <a href="/memos/<%= memo["id"] %>"><%= memo["title"] %></a>
+          <a href="/memos/<%= memo["id"] %>"><%= CGI.escapeHTML(memo["title"]) %></a>
         </td>
       </tr>
     <% end %>

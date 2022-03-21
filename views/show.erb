@@ -3,11 +3,11 @@
     <div class="form-items">
       <div class="form-items__item">
         <label>タイトル：</label>
-        <input type="text" value=<%= @target_memo["title"] %> name="title" maxlength=20 disabled="disabled">
+        <input type="text" value=<%= CGI.escapeHTML(@target_memo["title"]) %> name="title" maxlength=20 disabled="disabled">
       </div>
       <div class="form-items__item">
         <label>内容：</label>
-        <textarea name="content" maxlength=120 disabled="disabled"><%= @target_memo["content"] %></textarea>
+        <textarea name="content" maxlength=120 disabled="disabled"><%= CGI.escapeHTML(@target_memo["content"]) %></textarea>
       </div>
     </div>
   </form>
