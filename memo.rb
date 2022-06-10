@@ -23,8 +23,40 @@ class Connection
     @memo_content.find { |memo| memo['id'] == memo_id.to_i }
   end
 
-  def find_target(memo_id)
+  def find_target_index(memo_id)
     @memo_content.find_index { |memo| memo['id'] == memo_id.to_i }
+  end
+
+  def create_memo(title, content)
+    new_memo =
+      if @memo_content.empty?
+        {
+          'id' => 1,
+          'title' => title,
+          'content' => content
+        }
+      else
+        {
+          'id' => @memo_content.last['id'] + 1,
+          'title' => title,
+          'content' => content
+        }
+      end
+    @memo_content.push(new_memo)
+    update_json_file()
+  end
+
+  def update_memo(memo_id, title, content)
+    target_memo_index = find_target_index(memo_id)
+    @memo_content[target_memo_index]['title'] = title
+    @memo_content[target_memo_index]['content'] = content
+    update_json_file()
+  end
+
+  def delete_memo(memo_id)
+    target_memo_index = find_target_index(memo_id)
+    @memo_content.delete_at(target_memo_index)
+    update_json_file()
   end
 
 end
@@ -45,61 +77,27 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  # file_content = JSON.parse(File.read('public/memos.json'))
-  new_memo =
-    if memo_path.memo_content.empty?
-      {
-        'id' => 1,
-        'title' => params[:title],
-        'content' => params[:content]
-      }
-    else
-      {
-        'id' => memo_path.memo_content.last['id'] + 1,
-        'title' => params[:title],
-        'content' => params[:content]
-      }
-    end
-  memo_path.memo_content.push(new_memo)
-  memo_path.update_json_file
-  # File.open('public/memos.json', 'w') { |f| JSON.dump(file_content, f) }
+  memo_path.create_memo(params[:title], params[:content])
   redirect '/memos'
 end
 
 get '/memos/:memo_id' do
-  # memos = JSON.parse(File.read('public/memos.json'))['memos']
   @target_memo = memo_path.find_same_id(params[:memo_id])
-  # @target_memo = memos.find { |memo| memo['id'] == params[:memo_id].to_i }
   erb :show
 end
 
 get '/memos/:memo_id/edit' do
-  # memos = JSON.parse(File.read('public/memos.json'))['memos']
-  # @target_memo = memos.find { |memo| memo['id'] == params[:memo_id].to_i }
   @target_memo = memo_path.find_same_id(params[:memo_id])
   erb :edit
 end
 
 patch '/memos/:memo_id' do
-  # file_content = JSON.parse(File.read('public/memos.json'))
-  # target_memo_index = file_content['memos'].find_index { |memo| p memo['id'] == params[:memo_id].to_i }
-  # file_content['memos'][target_memo_index]['title'] = params[:title]
-  # file_content['memos'][target_memo_index]['content'] = params[:content]
-  target_memo_index = memo_path.find_target(params[:memo_id])
-  memo_path.memo_content[target_memo_index]['title'] = params[:title]
-  memo_path.memo_content[target_memo_index]['content'] = params[:content]
-  memo_path.update_json_file
+  memo_path.update_memo(params[:memo_id].to_i, params[:title], params[:content])
   redirect '/memos'
 end
 
 delete '/memos/delete' do
-  # file_content = JSON.parse(File.read('public/memos.json'))
-  # target_memo_index = file_content['memos'].find_index { |memo| memo['id'] == params[:memo_id].to_i }
-  # file_content['memos'].delete_at(target_memo_index)
-  # File.open('public/memos.json', 'w') { |f| JSON.dump(file_content, f) }
-  target_memo_index = memo_path.find_target(params[:memo_id])
-  memo_path.memo_content.delete_at(target_memo_index)
-  memo_path.update_json_file
+  memo_path.delete_memo(params[:memo_id])
   redirect '/memos'
 end
 
