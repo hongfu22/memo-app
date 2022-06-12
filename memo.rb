@@ -3,72 +3,65 @@
 
 require 'sinatra'
 require 'cgi'
-require 'json'
+require 'pg'
 
 set :environment, :production
 
-class Connection
+set :sessions,
+    expire_after: 7200,
+    secret: 'abcdefghij0123456789'
+
+# class for connecting memo_apps DB
+class Memo
   attr_accessor :memo, :memo_content
 
   def initialize
-    @memo = JSON.parse(File.read('public/memos.json'))
-    @memo_content = @memo['memos']
-  end
-
-  def update_json_file()
-    File.open('public/memos.json', 'w') { |f| JSON.dump(@memo, f) }
+    @conn = PG.connect(dbname: 'memo_apps')
   end
 
   def find_same_id(memo_id)
-    @memo_content.find { |memo| memo['id'] == memo_id.to_i }
+    target_memo = @conn.exec('SELECT * FROM memos WHERE id = $1;', [memo_id])
+    target_memo[0]
   end
 
-  def find_target_index(memo_id)
-    @memo_content.find_index { |memo| memo['id'] == memo_id.to_i }
+  def fetch_memos(start_point)
+    @conn.exec('SELECT * FROM memos ORDER BY id DESC LIMIT 5 OFFSET $1;', [start_point])
+  end
+
+  def fetch_count
+    @conn.exec('SELECT COUNT(*) FROM memos;')[0]['count'].to_i
   end
 
   def create_memo(title, content)
-    new_memo =
-      if @memo_content.empty?
-        {
-          'id' => 1,
-          'title' => title,
-          'content' => content
-        }
-      else
-        {
-          'id' => @memo_content.last['id'] + 1,
-          'title' => title,
-          'content' => content
-        }
-      end
-    @memo_content.push(new_memo)
-    update_json_file()
+    current_counts = @conn.exec('SELECT * FROM counts;')
+    max_id = current_counts[0]['counts'].to_i
+    new_max_id = max_id + 1
+    @conn.exec('UPDATE counts SET counts = $1 WHERE id = $2', [new_max_id, 99])
+    @conn.exec('INSERT INTO memos VALUES ($1, $2, $3)', [new_max_id, title, content])
   end
 
   def update_memo(memo_id, title, content)
-    target_memo_index = find_target_index(memo_id)
-    @memo_content[target_memo_index]['title'] = title
-    @memo_content[target_memo_index]['content'] = content
-    update_json_file()
+    @conn.exec('UPDATE memos SET (title, content) = ($1, $2) WHERE id = $3', [title, content, memo_id])
   end
 
   def delete_memo(memo_id)
-    target_memo_index = find_target_index(memo_id)
-    @memo_content.delete_at(target_memo_index)
-    update_json_file()
+    @conn.exec('DELETE FROM memos WHERE id = $1', [memo_id])
   end
-
 end
 
-memo_path = Connection.new()
+memo_connection = Memo.new
 
 get '/' do
-  redirect '/memos'
+  redirect '/memos/1/list'
 end
 
-get '/memos' do
-  @memos = memo_path.memo['memos']
+get '/memos/:page/list' do
+  transition_page = params[:page].to_i
+  session[:page] = transition_page
+  @display_number = 5
+  @start_point = (transition_page - 1) * @display_number
+  @end_point = memo_connection.fetch_count
+  @memos = memo_connection.fetch_memos(@start_point)
   erb :memos
 end
 
@@ -77,28 +70,28 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memo_path.create_memo(params[:title], params[:content])
-  redirect '/memos'
+  memo_connection.create_memo(params[:title], params[:content])
+  redirect '/memos/1/list'
 end
 
-get '/memos/:memo_id' do
-  @target_memo = memo_path.find_same_id(params[:memo_id])
+get '/memos/:memo_id/show' do
+  @target_memo = memo_connection.find_same_id(params[:memo_id])
   erb :show
 end
 
 get '/memos/:memo_id/edit' do
-  @target_memo = memo_path.find_same_id(params[:memo_id])
+  @target_memo = memo_connection.find_same_id(params[:memo_id])
   erb :edit
 end
 
 patch '/memos/:memo_id' do
-  memo_path.update_memo(params[:memo_id].to_i, params[:title], params[:content])
-  redirect '/memos'
+  memo_connection.update_memo(params[:memo_id].to_i, params[:title], params[:content])
+  redirect '/memos/1/list'
 end
 
 delete '/memos/delete' do
-  memo_path.delete_memo(params[:memo_id])
-  redirect '/memos'
+  memo_connection.delete_memo(params[:memo_id])
+  redirect '/memos/1/list'
 end
 
 not_found do

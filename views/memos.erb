@@ -1,17 +1,39 @@
 
 <h2>メモ一覧</h2>
-<% if @memos.nil? %>
+<% if @memos.count == 0 %>
   <p>メモを作成しよう！</p>
 <% else %>
   <table>
     <% @memos.each do |memo| %>
       <tr>
         <td>
-          <a href="/memos/<%= memo["id"] %>"><%= CGI.escapeHTML(memo["title"]) %></a>
+          <a href="/memos/<%= memo['id'] %>/show"><%= CGI.escapeHTML(memo["title"]) %></a>
+        </td>
+        <td>
+          <form method="post" action="/memos/delete">
+          <input type="text" value="<%= memo['id'] %>" name="memo_id" hidden>
+          <input type="hidden" value="delete" name="_method">
+          <input type="submit" value="Delete">
+          </form>
         </td>
       </tr>
     <% end %>
-  </table>
+  <table>
+  <div class="paging">
+    <ul class="paging-items">
+      <% if session[:page] == 1%>
+        <li><a>&lt;&lt;Prev</a></li>
+      <% else %>
+        <li><a href="/memos/<%= session[:page] - 1 %>/list">&lt;&lt;Prev</a></li>
+      <% end %>
+      <% if @memos.values.size < 5 || @start_point + @display_number == @end_point %>
+        <li><a>Next&gt;&gt;</a></li>
+      <% else %>
+        <li><a href="/memos/<%= session[:page] + 1 %>/list">Next&gt;&gt;</a></li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>
+
 
 <a href="/memos/new">メモを作成！</a>
