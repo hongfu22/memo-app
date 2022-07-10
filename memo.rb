@@ -8,12 +8,11 @@ require 'pg'
 set :environment, :production
 
 set :sessions,
-    expire_after: 7200,
-    secret: 'abcdefghij0123456789'
+    expire_after: 7200
 
 # class for connecting memo_apps DB
-class Memo
-  attr_accessor :memo, :memo_content
+class MemoConnection
+  # attr_accessor :memo, :memo_content
 
   def initialize
     @conn = PG.connect(dbname: 'memo_apps')
@@ -49,17 +48,21 @@ class Memo
   end
 end
 
-memo_connection = Memo.new
+memo_connection = MemoConnection.new
 
 get '/' do
-  redirect '/memos/1/list'
+  redirect '/memos?page=1'
 end
 
-get '/memos/:page/list' do
-  transition_page = params[:page].to_i
-  session[:page] = transition_page
+get '/memos' do
+  @transition_page =
+    if params[:page].nil?
+      1
+    else
+      params[:page].to_i
+    end
   @display_number = 5
-  @start_point = (transition_page - 1) * @display_number
+  @start_point = (@transition_page - 1) * @display_number
   @end_point = memo_connection.fetch_count
   @memos = memo_connection.fetch_memos(@start_point)
   erb :memos
@@ -71,10 +74,10 @@ end
 
 post '/memos' do
   memo_connection.create_memo(params[:title], params[:content])
-  redirect '/memos/1/list'
+  redirect '/memos?page=1'
 end
 
-get '/memos/:memo_id/show' do
+get '/memos/:memo_id' do
   @target_memo = memo_connection.find_same_id(params[:memo_id])
   erb :show
 end
@@ -86,12 +89,12 @@ end
 
 patch '/memos/:memo_id' do
   memo_connection.update_memo(params[:memo_id].to_i, params[:title], params[:content])
-  redirect '/memos/1/list'
+  redirect '/memos?page=1'
 end
 
 delete '/memos/delete' do
   memo_connection.delete_memo(params[:memo_id])
-  redirect '/memos/1/list'
+  redirect '/memos?page=1'
 end
 
 not_found do
