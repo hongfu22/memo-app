@@ -7,9 +7,6 @@ require 'pg'
 
 set :environment, :production
 
-set :sessions,
-    expire_after: 7200
-
 # class for connecting memo_apps DB
 class MemoConnection
   # attr_accessor :memo, :memo_content
@@ -51,7 +48,7 @@ end
 memo_connection = MemoConnection.new
 
 get '/' do
-  redirect '/memos?page=1'
+  redirect '/memos'
 end
 
 get '/memos' do
@@ -74,7 +71,7 @@ end
 
 post '/memos' do
   memo_connection.create_memo(params[:title], params[:content])
-  redirect '/memos?page=1'
+  redirect '/memos'
 end
 
 get '/memos/:memo_id' do
@@ -89,12 +86,12 @@ end
 
 patch '/memos/:memo_id' do
   memo_connection.update_memo(params[:memo_id].to_i, params[:title], params[:content])
-  redirect '/memos?page=1'
+  redirect '/memos'
 end
 
 delete '/memos/delete' do
   memo_connection.delete_memo(params[:memo_id])
-  redirect '/memos?page=1'
+  redirect '/memos'
 end
 
 not_found do
