@@ -1,0 +1,23 @@
+
+drop table if exists memos;
+drop table if exists counts;
+
+create table memos (
+    id integer primary key,
+    user_id varchar(20),
+    title varchar(20),
+    content varchar(80),
+    foreign key(user_id) references users(id)
+);
+
+create table counts (
+    id integer primary key,
+    counts integer
+);
+
+
+insert into memos values (1, 'タイトル1', 'テスト');
+insert into memos values (2, 'タイトル2', 'テストテスト');
+insert into memos values (3, 'タイトル3', 'テスト2');
+
+insert into counts values(99, 3);

@@ -1,0 +1,165 @@
+
+@charset "UTF-8";
+
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+header {
+  border-bottom: 5px double #5fcc95;
+}
+
+.header-nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+header h1{
+  float: left;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+header img {
+  height: 50px;
+  width: 70px;
+}
+
+.menu {
+  display: flex;
+  list-style: none;
+}
+
+.menu ul {
+  display: flex;
+  list-style: none;
+}
+
+.menu li {
+  margin-right: 30px;
+}
+
+main {
+  text-align: center;
+}
+
+table {
+  margin: 0 auto;
+}
+
+td {
+  padding-right: 30px;
+}
+
+.form-section {
+  width: 640px;
+  margin: 0 auto;
+}
+
+form {
+  margin-top: 15px;
+}
+
+/* 送信ボタン */
+input[type="submit"], input[type="reset"] {
+  width: 160px;
+  height: 40px;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 5px;
+  background-color: #5fcc95;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.form-of-creation {
+  margin-top: 40px;
+}
+
+label {
+  width: 100%;
+  display: inline-block;
+  text-align: left;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input[type="text"], input[type="password"],
+textarea {
+  width: 375px;
+  padding: .5em;
+  border: solid 1px #aaa;
+  border-radius: 4px;
+}
+
+/* クリックされている状態でのデザイン */
+input[type="text"]:focus, input[type="password"], textarea:focus{
+  outline-color: #C0D85C;
+  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.2);
+}
+
+/* テキストエリアのみ広くするため */
+textarea {
+  height: 8em;
+}
+
+.form-items__item {
+  margin-bottom: 16px;
+}
+
+/* テーブルデザイン */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 20px;
+}
+
+table tr{
+  border-bottom: solid 1px #eee;
+  cursor: pointer;
+}
+
+table tr:hover{
+  background-color: #d4f0fd;
+}
+
+table th,table td{
+  text-align: center;
+  width: 25%;
+  padding: 15px 0;
+}
+
+/* ページングのリンクを整形 */
+.paging .paging-items {
+  text-align: center;
+  padding-inline-start: 0;
+}
+
+.paging .paging-items li {
+  display: inline;
+  /* margin: 0 2px; */
+  padding: 0;
+  display: inline-block;
+  background: #5fcc95;
+  width: 70px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.paging .paging-items a {
+  vertical-align: middle;
+  color: #fff;
+}
+
+
+
+
